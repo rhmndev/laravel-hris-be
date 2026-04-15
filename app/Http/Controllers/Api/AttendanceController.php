@@ -62,7 +62,6 @@ class AttendanceController extends Controller
         $attendance = Attendance::create([
             'user_id' => $user->id,
             'attendance_date' => $today,
-            // 'distance_meters' => round($distance, 2),
             'check_in_time' => $now,
             'check_in_latitude' => $request->latitude,
             'check_in_longitude' => $request->longitude,
@@ -83,14 +82,82 @@ class AttendanceController extends Controller
 
     }
 
-    // public function checkOut(CheckOutRequest $request): JsonResponse
-    // {
-
-    // }
-
-    public function today()
+    public function checkOut(CheckOutRequest $request): JsonResponse
     {
+        $user = $request->user();
+        $today = Carbon::today();
 
+        $existingAttendance = Attendance::where('user_id', $user->id)
+            ->whereDate('attendance_date', $today)
+            ->first();
+
+        if (!$existingAttendance) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kamu Belum Check-in Hari Ini',
+            ], 400);
+        }
+
+        if ($existingAttendance->check_out_time) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kamu Sudah Check-out Hari Ini',
+            ], 400);
+        }
+
+        $company = Company::getCompany();
+
+        if (!$company) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Company information not found',
+            ], 404);
+        }
+
+        $distance = $this->calculateDistance(
+            $request->latitude,
+            $request->longitude,
+            $company->latitude,
+            $company->longitude
+        );
+
+        if ($distance > $company->radius) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are outside the allowed check-out radius. Distance: ' . round($distance, 2) . ' meters',
+            ], 422);
+        }
+
+        $photoPath = $request->file('photo')->store('attendances/'.$today->format('Y/m'), 'public');
+
+        $existingAttendance->update([
+            'check_out_time' => Carbon::now(),
+            'check_out_latitude' => $request->latitude,
+            'check_out_longitude' => $request->longitude,
+            'check_out_photo' => $photoPath,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'attendance' => $existingAttendance,
+                'distance_meters' => round($distance, 2) . ' meters',
+            ],
+            'message' => 'Checked out successfully.',
+        ]);
+    }
+
+    public function today(Request $request): JsonResponse
+    {
+        $attendance = Attendance::where('user_id', $request->user()->id)
+            ->whereDate('attendance_date', Carbon::today())
+            ->first();
+
+            return response()->json([
+                'success' => true,
+                'data' => $attendance,
+                'message' =>  $attendance ? 'Today\'s attendance retrieved successfully' : 'You have not checked in today',
+            ]);
     }
 
     public function history()
