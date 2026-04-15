@@ -7,6 +7,8 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Support\Icons\Heroicon;
+use Filament\Support\Enums\IconPosition;
 
 class UsersTable
 {
@@ -18,14 +20,24 @@ class UsersTable
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('name')
+                    ->icon(Heroicon::User)
+                    ->iconColor('primary')
+                    ->iconPosition(IconPosition::After)
                     ->searchable(),
                 TextColumn::make('email')
                     ->label('Email address')
+                    ->icon(Heroicon::Envelope)
+                    ->iconColor('primary')
+                    ->iconPosition(IconPosition::After)
                     ->searchable(),
                 TextColumn::make('employee_id')
                     ->searchable(),
                 TextColumn::make('role')
-                    ->badge(),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'admin' => 'info',
+                        'employee' => 'success',
+                    }),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

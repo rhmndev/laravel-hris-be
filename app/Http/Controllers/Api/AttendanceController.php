@@ -160,9 +160,22 @@ class AttendanceController extends Controller
             ]);
     }
 
-    public function history()
+    public function history(Request $request): JsonResponse
     {
+        $month = $request->query('month', Carbon::now()->month);
+        $year = $request->query('year', Carbon::now()->year);
 
+        $attendances = Attendance::where('user_id', request()->user()->id)
+            ->whereYear('attendance_date', $year)
+            ->whereMonth('attendance_date', $month)
+            ->orderBy('attendance_date', 'desc')
+            ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $attendances,
+                'message' => 'Attendance history retrieved successfully',
+            ]);
     }
 
       private function calculateDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
