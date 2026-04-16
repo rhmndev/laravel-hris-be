@@ -8,7 +8,9 @@ use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Attendance;
 use Carbon\Carbon;
+use Filament\Schemas\Components\Image;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
 // use Filament\Tables\Columns\BadgeColumn; // deprecated in favor of TextColumn with badge() method
 
 
@@ -41,16 +43,36 @@ class LatestAttendanceWidget extends TableWidget
                     ->searchable(),
 
                 TextColumn::make('check_in_time')
-                    ->label('Check-in')
-                    ->dateTime('H:i')
-                    ->sortable(),
-
-                TextColumn::make('check_out_time')
-                    ->label('Check-out')
+                    ->label('Time-In')
                     ->dateTime('H:i')
                     ->placeholder('-')
+                    ->AlignCenter()
                     ->sortable(),
 
+                ImageColumn::make('check_in_photo')
+                   ->label('Foto Check-in')
+                    ->disk('public')
+                    ->circular()
+                    ->alignCenter()
+                    ->ImageHeight(60)
+                    ->ImageWidth(60)
+                    ->placeholder('-'),
+
+                TextColumn::make('check_out_time')
+                    ->label('Time Out')
+                    ->dateTime('H:i')
+                    ->placeholder('-')
+                    ->AlignCenter()
+                    ->sortable(),
+
+                ImageColumn::make('check_out_photo')
+                    ->label('Foto Check-out')
+                    ->disk('public')
+                    ->circular()
+                    ->ImageHeight(60)
+                    ->alignCenter()
+                    ->ImageWidth(60)
+                    ->placeholder('-'),
 
                 TextColumn::make('status')
                     ->label('Status')

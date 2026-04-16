@@ -8,6 +8,7 @@ use Dedoc\Scramble\Support\Generator\Operation;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Dedoc\Scramble\Support\RouteInfo;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -37,5 +38,10 @@ class AppServiceProvider extends ServiceProvider
                 $operation->security = [];
             }
         });
+
+        // Paksa HTTPS jika diakses melalui Ngrok (karena Ngrok menggunakan HTTPS, untuk simulasi)
+        if (str_contains(request()->header('host'), 'ngrok-free.dev')) {
+            URL::forceScheme('https');
+        }
     }
 }

@@ -35,10 +35,14 @@ class AttendancesTable
                     ->numeric()
                     ->sortable(),
                 ImageColumn::make('check_in_photo')
-                    ->disk('public')
                     ->label('Check-in Photo')
-                    ->imageHeight(60)
-                    ->imageWidth(60),
+                    ->disk('public')
+                    ->circular()
+                    ->alignCenter()
+                    ->ImageHeight(60)
+                    ->ImageWidth(60)
+                    ->placeholder('-'),
+
                 TextColumn::make('check_out_time')
                     ->dateTime()
                     ->sortable(),
@@ -51,8 +55,11 @@ class AttendancesTable
                 ImageColumn::make('check_out_photo')
                     ->disk('public')
                     ->label('Check-out Photo')
-                    ->imageHeight(70)
-                    ->imageWidth(70),
+                    ->circular()
+                    ->alignCenter()
+                    ->ImageHeight(60)
+                    ->ImageWidth(60)
+                    ->placeholder('-'),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
