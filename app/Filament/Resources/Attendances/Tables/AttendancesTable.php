@@ -15,6 +15,9 @@ class AttendancesTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('No')
+                    ->sortable(),
                 TextColumn::make('user_id')
                     ->numeric()
                     ->sortable(),
@@ -26,7 +29,10 @@ class AttendancesTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('check_in_time')
-                    ->dateTime()
+                    ->label('Time-In')
+                    ->dateTime('H:i')
+                    ->placeholder('-')
+                    // ->AlignCenter()
                     ->sortable(),
                 TextColumn::make('check_in_latitude')
                     ->numeric()
@@ -44,7 +50,10 @@ class AttendancesTable
                     ->placeholder('-'),
 
                 TextColumn::make('check_out_time')
-                    ->dateTime()
+                    ->label('Time-Out')
+                    ->dateTime('H:i')
+                    ->placeholder('-')
+                    // ->AlignCenter()
                     ->sortable(),
                 TextColumn::make('check_out_latitude')
                     ->numeric()

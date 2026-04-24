@@ -11,27 +11,51 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    // public function login(LoginRequest $request): JsonResponse
+    // {
+    //     $user = User::where('email', $request->email)->first();
+
+    //     if (!$user || !Hash::check($request->password, $user->password)) {
+    //         return response()->json(['message' => 'Invalid credentials, please try again'], 401);
+    //     }
+
+    //     $user->tokens()->delete();
+
+    //     $access_token = $user->createToken('auth_token')->plainTextToken;
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => [
+    //             'user' => $user,
+    //             'token' => $access_token,
+    //         ],
+    //         'message' => 'Login Successfully',
+    //     ]);
+    // }
+
     public function login(LoginRequest $request): JsonResponse
-    {
-        $user = User::where('email', $request->email)->first();
+{
+    $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }
-
-        $user->tokens()->delete();
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'user' => $user,
-                'token' => $token,
-            ],
-            'message' => 'Login Successfully',
-        ]);
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        return response()->json(['message' => 'Invalid credentials, please try again'], 401);
     }
+
+    // Hapus token lama jika ada
+    $user->tokens()->delete();
+
+    // Buat token baru
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'user' => $user,
+            'access_token' => $token, // Nama key ini harus 'access_token' sesuai Vue
+        ],
+        'message' => 'Login Successfully',
+    ]);
+}
 
     public function me(Request $request): JsonResponse
     {
