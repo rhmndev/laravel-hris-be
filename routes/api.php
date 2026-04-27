@@ -18,7 +18,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/company', [CompanyController::class, 'index']);
-    Route::get('/profile-photo', [UserController::class, 'profilePhoto']);
+    // Route::get('/profile-photo', [UserController::class, 'profilePhoto']);
+    Route::middleware('auth:sanctum')->get('/user/profile-photo', [UserController::class, 'profilePhoto']);
 
     Route::prefix('attendance')->group(function () {
         Route::post('/check-in', [AttendanceController::class, 'checkIn']);
