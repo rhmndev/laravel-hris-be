@@ -16,7 +16,7 @@ class LoginRequest extends FormRequest
     {
         return [
             /*
-            @example superadmin@admin.com
+            @example rahman@gmail.com
             */
             'email' => 'required|email',
             /*

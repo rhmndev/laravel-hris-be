@@ -9,6 +9,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Support\Icons\Heroicon;
 use Filament\Support\Enums\IconPosition;
+use Filament\Tables\Columns\ImageColumn;
 
 class UsersTable
 {
@@ -17,22 +18,37 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('id')
+                    ->label('No')
+                    ->sortable()
                     ->numeric()
+                    ->alignCenter()
                     ->sortable(),
+                ImageColumn::make('profile_photo')
+                    ->label('Profile Photo')
+                    ->disk('public')
+                    ->circular()
+                    ->alignCenter()
+                    ->ImageHeight(60)
+                    ->ImageWidth(60)
+                    ->placeholder('-')
+                    ->visibility('public'),
                 TextColumn::make('name')
+                    ->label('Nama')
                     ->icon(Heroicon::User)
                     ->iconColor('primary')
                     ->iconPosition(IconPosition::After)
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label('Email address')
+                    ->label('Email Address')
                     ->icon(Heroicon::Envelope)
                     ->iconColor('primary')
                     ->iconPosition(IconPosition::After)
                     ->searchable(),
                 TextColumn::make('employee_id')
+                    ->label('ID Karyawan')
                     ->searchable(),
                 TextColumn::make('role')
+                    ->label('Role')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'admin' => 'info',
