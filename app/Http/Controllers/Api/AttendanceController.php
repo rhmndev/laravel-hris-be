@@ -165,15 +165,51 @@ class AttendanceController extends Controller
         $month = $request->query('month', Carbon::now()->month);
         $year = $request->query('year', Carbon::now()->year);
 
+        $start = Carbon::createFromDate((int)$year, (int)$month, 1)->startOfDay();
+        $today = Carbon::today()->startOfDay();
+        $endOfMonth = $start->copy()->endOfMonth()->startOfDay();
+        $isCurrentMont = ((int)$year === (int)$today->year) && ((int)$month === (int)$today->month);
+        $end = $isCurrentMont ? $today : $endOfMonth;
+
         $attendances = Attendance::where('user_id', request()->user()->id)
             ->whereYear('attendance_date', $year)
             ->whereMonth('attendance_date', $month)
             ->orderBy('attendance_date', 'desc')
             ->get();
 
+        $attendanceMap = $attendances->keyBy(function (Attendance $attendances) {
+            return $attendances->attendance_date->format('Y-m-d');
+        });
+
+        $fullMonth = [];
+
+        for ($date = $end->copy(); $date->gte($start); $date->subDay()) {
+            $key = $date->toDateString();
+            $attendance = $attendanceMap->get($key);
+
+            if ($attendance) {
+                $item = $attendance->toArray();
+                // $item['keterangan'] = $item['keterangan'] ?? null;
+            } else {
+                $item = [
+                    'attendance_date' => $key,
+                    'status' => 'absent',
+                    'check_in_time' => null,
+                    'check_latitude' => null,
+                    'check_longitude' => null,
+                    'check_photo' => null,
+                    'check_out_time' => null,
+                    'check_out_latitude' => null,
+                    'check_out_longitude' => null,
+                    'check_out_photo' => null,
+                ];
+            }
+
+            $fullMonth[] = $item;
+        }
             return response()->json([
                 'success' => true,
-                'data' => $attendances,
+                'data' => $fullMonth,
                 'message' => 'Attendance history retrieved successfully',
             ]);
     }
