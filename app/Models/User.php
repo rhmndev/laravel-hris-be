@@ -11,9 +11,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
-#[Fillable(['name', 'email', 'password', 'employee_id', 'role', 'profile_photo'])]
+#[Fillable(['name', 'email', 'password', 'employee_id', 'role', 'branch_id', 'profile_photo'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -41,5 +43,19 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    // public function getProfilePhotoUrlAttribute(): ?string
+    // {
+    //     if (!$this->profile_photo_path) {
+    //         return null;
+    //     }
+
+    //     return Storage::disk('public')->url($this->profile_photo_path);
+    // }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

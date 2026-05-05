@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
-use Ilminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Auth\Database\Eloquent\SoftDeletes;
 
 class Attendance extends Model
 {
@@ -14,6 +14,7 @@ class Attendance extends Model
 
     protected $fillable = [
         'user_id',
+        'branch_id',
         'attendance_date',
         'check_in_time',
         'check_in_latitude',
@@ -42,5 +43,10 @@ class Attendance extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

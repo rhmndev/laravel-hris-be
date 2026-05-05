@@ -46,6 +46,7 @@ class AttendanceFactory extends Factory
 
         return [
             'user_id' => User::factory(),
+            'branch_id' => null,
             'attendance_date' => Carbon::parse($attendanceDate)->format('Y-m-d'),
             'check_in_time' => $checkInTime,
             'check_in_latitude' => $baseLat + fake()->randomFloat(6, -0.001, 0.001),

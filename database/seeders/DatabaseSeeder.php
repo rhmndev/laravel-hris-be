@@ -21,18 +21,27 @@ class DatabaseSeeder extends Seeder
     {
 
         // Create default company
-        Company::create([
+        $company = Company::create([
             'name' => 'PT Dharma Control Cable Indonesia',
-            'address' => 'Jl.Tekno Industri kawasan Industri Jababeka VIII No.1 Blok A3, Cikarang Kota, Kec. Cikarang Utara, Kabupaten Bekasi, Jawa Barat 17530',
-            'latitude' => -6.264635607653457,
-            'longitude' => 107.15553996261775,
-            'radius' => 300,
-            'work_start_time' => '07:00:00',
-            'work_end_time' => '16:15:00',
+            'address' => 'Jl. Contoh Alamat No. 123, Cikarang, Bekasi, Jawa Barat',
+        ]);
+
+        // Create default branch
+        $branch = $company->branches()->create([
+            'name' => 'Head Office',
+            'address' => 'Jl. Contoh Alamat No. 123, Jakarta',
+            'latitude' => -6.20000000,
+            'longitude' => 106.84500000,
+            'radius' => 100,
+            'work_start_time' => '08:00:00',
+            'work_end_time' => '17:00:00',
         ]);
 
         // Create 10 employee users with attendance data
-        $users = User::factory()->count(10)->create();
+        $users = User::factory()
+            ->count(10)
+            ->state(['branch_id' => $branch->id])
+            ->create();
 
         // Generate attendance data for each user for the last 30 days
         $startDate = Carbon::now()->subDays(30);
@@ -48,6 +57,7 @@ class DatabaseSeeder extends Seeder
                     if (fake()->boolean(90)) {
                         Attendance::factory()
                             ->for($user)
+                            ->state(['branch_id' => $user->branch_id])
                             ->forDate($currentDate)
                             ->create();
                     }
