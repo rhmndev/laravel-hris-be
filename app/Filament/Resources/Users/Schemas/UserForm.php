@@ -22,21 +22,26 @@ class UserForm
                     ->label('Email address')
                     ->email()
                     ->required(),
-                    DateTimePicker::make('email_verified_at'),
-                    TextInput::make('password')
+                DateTimePicker::make('email_verified_at'),
+                TextInput::make('password')
                     ->required(fn (string $operation) => $operation === 'create')
                     ->dehydrated(fn ($state) => filled($state))
                     ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                     ->password(),
-                    TextInput::make('phone')
+                TextInput::make('phone')
                     ->tel(),
-                    FileUpload::make('profile_photo')
+                FileUpload::make('profile_photo')
                         ->label('Profile Photo')
                         ->image()
                         ->disk('public')
                         ->directory('profile-photos')
                         ->visibility('public'),
                 TextInput::make('employee_id'),
+                Select::make('branch_id')
+                    ->relationship('branch', 'name')
+                    ->label('Branch')
+                    ->searchable()
+                    ->preload(),
                 Select::make('role')
                     ->options(['admin' => 'Admin', 'employee' => 'Employee'])
                     ->default('employee')

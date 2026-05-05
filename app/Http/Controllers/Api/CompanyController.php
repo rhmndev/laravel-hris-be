@@ -10,9 +10,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class CompanyController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $company = Company::getCompany();
+        $branchId = $request->user()?->branch_id;
+
+        $company = Company::query()
+                    ->with(['branches' => fn ($q) => $q->when($branchId, fn ($q) => $q->whereKey($branchId))])
+                    ->first();
 
         if (!$company) {
             return response()->json([

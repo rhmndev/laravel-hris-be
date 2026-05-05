@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Override;
 
 class CompanyResource extends Resource
 {
@@ -44,5 +45,11 @@ class CompanyResource extends Resource
             'create' => CreateCompany::route('/create'),
             'edit' => EditCompany::route('/{record}/edit'),
         ];
+    }
+
+    #[Override]
+    public static function canCreate(): bool
+    {
+        return Company::query()->count() === 0;
     }
 }

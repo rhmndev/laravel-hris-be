@@ -61,7 +61,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $request->user(),
+            'data' => $request->user()->load('branch'), // Load relasi branch
             'message' => 'User profile retrieved successfully',
         ]);
     }

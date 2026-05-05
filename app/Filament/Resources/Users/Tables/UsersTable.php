@@ -47,6 +47,9 @@ class UsersTable
                 TextColumn::make('employee_id')
                     ->label('ID Karyawan')
                     ->searchable(),
+                TextColumn::make('branch.name')
+                    ->label('Branch')
+                    ->searchable(),
                 TextColumn::make('role')
                     ->label('Role')
                     ->badge()

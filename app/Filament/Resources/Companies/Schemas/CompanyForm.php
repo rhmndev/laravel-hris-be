@@ -15,20 +15,7 @@ class CompanyForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('address'),
-                TextInput::make('latitude')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('longitude')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('radius')
-                    ->required()
-                    ->numeric()
-                    ->default(100),
-                TimePicker::make('work_start_time')
-                    ->required(),
-                TimePicker::make('work_end_time')
-                    ->required(),
+
             ]);
     }
 }

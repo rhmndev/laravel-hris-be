@@ -18,21 +18,6 @@ class CompaniesTable
                     ->searchable(),
                 TextColumn::make('address')
                     ->searchable(),
-                TextColumn::make('latitude')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('longitude')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('radius')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('work_start_time')
-                    ->time()
-                    ->sortable(),
-                TextColumn::make('work_end_time')
-                    ->time()
-                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
