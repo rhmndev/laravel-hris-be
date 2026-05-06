@@ -14,9 +14,7 @@ class CompanyController extends Controller
     {
         $branchId = $request->user()?->branch_id;
 
-        $company = Company::query()
-                    ->with(['branches' => fn ($q) => $q->when($branchId, fn ($q) => $q->whereKey($branchId))])
-                    ->first();
+        $company = Company::query()->first();
 
         if (!$company) {
             return response()->json([
@@ -24,6 +22,12 @@ class CompanyController extends Controller
                 'message' => 'Company information not found',
             ], 404);
         }
+
+        $branch = $company->branches()->when($branchId, fn ($query) => $query->where('id',$branchId))->first();
+
+        $company->setRelation('branch', $branch);
+        $company->unsetRelation('branches');
+
 
         return response()->json([
             'success' => true,
