@@ -5,8 +5,10 @@ namespace App\Filament\Resources\Branches\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class BranchesTable
 {
@@ -19,6 +21,8 @@ class BranchesTable
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('address')
+                    ->words(5)
+                    ->tooltip(fn (Model $record): string => $record->address)
                     ->searchable(),
                 TextColumn::make('latitude')
                     ->numeric()
@@ -35,6 +39,18 @@ class BranchesTable
                 TextColumn::make('work_end_time')
                     ->time()
                     ->sortable(),
+                IconColumn::make('require_liveness')
+                    ->boolean()
+                    ->alignCenter()
+                    ->label('Liveness Detection'),
+                IconColumn::make('require_geolocation')
+                    ->boolean()
+                    ->alignCenter()
+                    ->label('Geolocation'),
+                IconColumn::make('require_face_recognation')
+                    ->boolean()
+                    ->alignCenter()
+                    ->label('Face Recognition'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -6,6 +6,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\Toggle;
 
 class BranchForm
 {
@@ -33,6 +34,19 @@ class BranchForm
                     ->required(),
                 TimePicker::make('work_end_time')
                     ->required(),
+                Toggle::make('require_liveness')
+                    ->label('Liveness Detection')
+                    ->default(true)
+                    ->inline(false),
+                Toggle::make('require_geolocation')
+                    ->label('Geolocation')
+                    ->default(true)
+                    ->inline(false),
+                Toggle::make('require_face_recognation')
+                    ->label('Face Recognition')
+                    ->default(true)
+                    ->inline(false),
+
             ]);
     }
 }
