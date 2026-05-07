@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
-#[Fillable(['name', 'email', 'password', 'employee_id', 'role', 'branch_id', 'profile_photo'])]
+#[Fillable(['name', 'email', 'phone' , 'password', 'employee_id', 'role', 'branch_id', 'profile_photo'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {

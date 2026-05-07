@@ -30,9 +30,9 @@ class AttendanceController extends Controller
             ], 400);
         }
 
-        $company = Company::getCompany();
+        $branch = $user->branch;
 
-        if (!$company) {
+        if (!$branch) {
             return response()->json([
                 'success' => false,
                 'message' => 'Company information not found',
@@ -42,11 +42,11 @@ class AttendanceController extends Controller
         $distance = $this->calculateDistance(
             $request->latitude,
             $request->longitude,
-            $company->latitude,
-            $company->longitude
+            $branch->latitude,
+            $branch->longitude
         );
 
-        if ($distance > $company->radius) {
+        if ($distance > $branch->radius) {
             return response()->json([
                 'success' => false,
                 'message' => 'You are outside the allowed check-in radius. Distance: ' . round($distance, 2) . ' meters',
@@ -56,11 +56,12 @@ class AttendanceController extends Controller
         $photoPath = $request->file('photo')->store('attendances/'.$today->format('Y/m'), 'public');
 
         $now = Carbon::now();
-        $workStartTime = Carbon::createFromTimeString($company->work_start_time);
+        $workStartTime = Carbon::createFromTimeString($branch->work_start_time);
         $status = $now->greaterThan($workStartTime->setDate($now->year, $now->month, $now->day)) ? 'late' : 'on_time';
 
         $attendance = Attendance::create([
             'user_id' => $user->id,
+            'branch_id' => $branch->id,
             'attendance_date' => $today,
             'check_in_time' => $now,
             'check_in_latitude' => $request->latitude,
@@ -105,9 +106,9 @@ class AttendanceController extends Controller
             ], 400);
         }
 
-        $company = Company::getCompany();
+        $branch = $user->branch;
 
-        if (!$company) {
+        if (!$branch) {
             return response()->json([
                 'success' => false,
                 'message' => 'Company information not found',
@@ -117,11 +118,11 @@ class AttendanceController extends Controller
         $distance = $this->calculateDistance(
             $request->latitude,
             $request->longitude,
-            $company->latitude,
-            $company->longitude
+            $branch->latitude,
+            $branch->longitude
         );
 
-        if ($distance > $company->radius) {
+        if ($distance > $branch->radius) {
             return response()->json([
                 'success' => false,
                 'message' => 'You are outside the allowed check-out radius. Distance: ' . round($distance, 2) . ' meters',
@@ -189,7 +190,6 @@ class AttendanceController extends Controller
 
             if ($attendance) {
                 $item = $attendance->toArray();
-                // $item['keterangan'] = $item['keterangan'] ?? null;
             } else {
                 $item = [
                     'attendance_date' => $key,

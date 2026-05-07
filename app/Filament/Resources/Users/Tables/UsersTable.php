@@ -38,14 +38,17 @@ class UsersTable
                     ->iconColor('primary')
                     ->iconPosition(IconPosition::After)
                     ->searchable(),
+                TextColumn::make('employee_id')
+                    ->label('ID Karyawan')
+                    ->searchable(),
                 TextColumn::make('email')
                     ->label('Email Address')
                     ->icon(Heroicon::Envelope)
                     ->iconColor('primary')
                     ->iconPosition(IconPosition::After)
                     ->searchable(),
-                TextColumn::make('employee_id')
-                    ->label('ID Karyawan')
+                TextColumn::make('phone')
+                    ->label('Phone Number')
                     ->searchable(),
                 TextColumn::make('branch.name')
                     ->label('Branch')
