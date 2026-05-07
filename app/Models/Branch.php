@@ -22,6 +22,9 @@ class Branch extends Model
         'radius',
         'work_start_time',
         'work_end_time',
+        'require_liveness',
+        'require_geolocation',
+        'require_face_recognation',
     ];
 
      protected function casts(): array
@@ -32,6 +35,9 @@ class Branch extends Model
             'radius' => 'integer',
             'work_start_time' => 'datetime:H:i',
             'work_end_time' => 'datetime:H:i',
+            'require_liveness' => 'boolean',
+            'require_geolocation' => 'boolean',
+            'require_face_recognation' => 'boolean',
         ];
     }
 
