@@ -13,10 +13,13 @@ class CheckInRequest extends FormRequest
 
     public function rules(): array
     {
+        $branch = $this->user()->branch;
+        $requireGeo = $branch->require_geolocation ??false;
+        $requirePhoto = $branch?->require_liveness ?? false;
         return [
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'latitude' => $requireGeo ? 'required|numeric' : 'nullable|numeric',
+            'longitude' => $requireGeo ? 'required|numeric' : 'nullable|numeric',
+            'photo' => $requirePhoto ? 'required|image|mimes:jpeg,png,jpg,gif|max:2048' : 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 

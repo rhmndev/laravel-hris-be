@@ -39,11 +39,12 @@ class AttendanceController extends Controller
             ], 404);
         }
 
-        $distance = $this->calculateDistance(
-            $request->latitude,
-            $request->longitude,
-            $branch->latitude,
-            $branch->longitude
+        if ($branch->require_geolocation) {
+            $distance = $this->calculateDistance(
+                $request->latitude,
+                $request->longitude,
+                $branch->latitude,
+                $branch->longitude
         );
 
         if ($distance > $branch->radius) {
@@ -52,8 +53,13 @@ class AttendanceController extends Controller
                 'message' => 'You are outside the allowed check-in radius. Distance: ' . round($distance, 2) . ' meters',
             ], 422);
         }
+    }
 
-        $photoPath = $request->file('photo')->store('attendances/'.$today->format('Y/m'), 'public');
+        $photoPath = null;
+
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('attendances/'.$today->format('Y/m'), 'public');
+        }
 
         $now = Carbon::now();
         $workStartTime = Carbon::createFromTimeString($branch->work_start_time);
@@ -76,7 +82,7 @@ class AttendanceController extends Controller
             'success' => true,
             'data' => [
                 'attendance' => $attendance,
-                'distance_meters' => round($distance, 2) . ' meters',
+                // 'distance_meters' => round($distance, 2) . ' meters',
             ] ,
             'message' => $message,
         ]);
@@ -115,7 +121,8 @@ class AttendanceController extends Controller
             ], 404);
         }
 
-        $distance = $this->calculateDistance(
+        if ($branch->require_geolocation) {
+            $distance = $this->calculateDistance(
             $request->latitude,
             $request->longitude,
             $branch->latitude,
@@ -128,8 +135,13 @@ class AttendanceController extends Controller
                 'message' => 'You are outside the allowed check-out radius. Distance: ' . round($distance, 2) . ' meters',
             ], 422);
         }
+    }
 
-        $photoPath = $request->file('photo')->store('attendances/'.$today->format('Y/m'), 'public');
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('attendances/'.$today->format('Y/m'), 'public');
+        }
 
         $existingAttendance->update([
             'check_out_time' => Carbon::now(),
@@ -142,7 +154,7 @@ class AttendanceController extends Controller
             'success' => true,
             'data' => [
                 'attendance' => $existingAttendance,
-                'distance_meters' => round($distance, 2) . ' meters',
+                // 'distance_meters' => round($distance, 2) . ' meters',
             ],
             'message' => 'Checked out successfully.',
         ]);
