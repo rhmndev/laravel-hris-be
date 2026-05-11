@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class CompaniesTable
 {
@@ -17,6 +18,8 @@ class CompaniesTable
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('address')
+                    ->words(5)
+                    ->tooltip(fn (Model $record): string => $record->address)
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
