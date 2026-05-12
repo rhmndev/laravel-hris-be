@@ -13,6 +13,10 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceResource extends Resource
 {
@@ -44,5 +48,37 @@ class AttendanceResource extends Resource
             'create' => CreateAttendance::route('/create'),
             'edit' => EditAttendance::route('/{record}/edit'),
         ];
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+
+
+
+    public static function getEloquentQuery(): Builder
+    {
+        return static::applyUserScope(parent::getEloquentQuery());
+    }
+
+    protected static function applyUserScope(Builder $query): Builder
+    {
+        $user = Auth::user();
+
+        // get query attendancen just user it self
+        if (!$user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        // get query all attendance for admin
+        if (method_exists($user, 'hasRole') && $user->hasRole('super_admin')) {
+            return $query;
+        }
+
+        return $query->where('user_id', $user->id);
     }
 }

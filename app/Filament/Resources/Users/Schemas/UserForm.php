@@ -42,10 +42,14 @@ class UserForm
                     ->label('Branch')
                     ->searchable()
                     ->preload(),
-                Select::make('role')
-                    ->options(['admin' => 'Admin', 'employee' => 'Employee'])
-                    ->default('employee')
-                    ->required(),
+                Select::make('roles')
+                    ->label('Roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->minItems(1)
+                    ->maxItems(1)
+                    ->required()
+                    ->preload(),
             ]);
     }
 }

@@ -53,11 +53,11 @@ class UsersTable
                 TextColumn::make('branch.name')
                     ->label('Branch')
                     ->searchable(),
-                TextColumn::make('role')
+                TextColumn::make('roles.name')
                     ->label('Role')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'admin' => 'info',
+                        'super_admin' => 'info',
                         'employee' => 'success',
                     }),
                 TextColumn::make('created_at')
