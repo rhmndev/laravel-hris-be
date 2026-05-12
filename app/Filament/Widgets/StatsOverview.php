@@ -7,11 +7,19 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 use Carbon\Carbon;
 use App\Models\Attendance;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class StatsOverview extends BaseWidget
 {
 
     protected static ?int $sort = 1;
+
+    public static function canView(): bool
+    {
+        $user = Auth::user();
+
+        return $user && method_exists($user, 'hasRole') && $user->hasRole('super_admin');
+    }
 
     protected function getStats(): array
     {

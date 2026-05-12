@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use Filament\Widgets\ChartWidget;
 use App\Models\Attendance;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceChartWidget extends ChartWidget
 {
@@ -13,6 +14,13 @@ class AttendanceChartWidget extends ChartWidget
     protected static ?int $sort = 2;
 
     protected int | string | array $columnSpan = 'full';
+
+     public static function canView(): bool
+    {
+        $user = Auth::user();
+
+        return $user && method_exists($user, 'hasRole') && $user->hasRole('super_admin');
+    }
 
    protected function getData(): array
 {

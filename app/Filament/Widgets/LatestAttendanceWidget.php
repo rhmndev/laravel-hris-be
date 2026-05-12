@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Filament\Schemas\Components\Image;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
+use Illuminate\Support\Facades\Auth;
 // use Filament\Tables\Columns\BadgeColumn; // deprecated in favor of TextColumn with badge() method
 
 
@@ -25,13 +26,20 @@ class LatestAttendanceWidget extends TableWidget
 
     public function table(Table $table): Table
     {
+        $user = Auth::user();
+
+        $isSuperAdmin = method_exists($user, 'hasRole') && $user->hasRole('super_admin') ?? false;
+        $query = Attendance::query()
+            ->with('user')
+            ->whereDate('attendance_date', Carbon::today())
+            ->latest('check_in_time');
+
+        if (! $isSuperAdmin && $user) {
+            $query->where('user_id', $user->id);
+        }
+
         return $table
-            ->query(
-                Attendance::query()
-                ->with('user')
-                    ->whereDate('attendance_date', Carbon::today())
-                    ->latest('check_in_time')
-            )
+            ->query($query)
             ->columns([
                 TextColumn::make('user.name')
                     ->label('Nama')
