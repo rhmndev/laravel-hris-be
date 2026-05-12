@@ -16,7 +16,7 @@ class StatsOverview extends BaseWidget
     protected function getStats(): array
     {
         $today = Carbon::today();
-        $totalEmployee = User::Where('role', 'employee')->count();
+        $totalEmployee = User::role('employee')->count();
 
         $attendanceToday = Attendance::WhereDate('attendance_date', $today);
         $presentToday = $attendanceToday->count();
