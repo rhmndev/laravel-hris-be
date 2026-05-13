@@ -59,6 +59,9 @@ class UsersTable
                     ->color(fn (string $state): string => match ($state) {
                         'super_admin' => 'info',
                         'employee' => 'success',
+                        'manager' => 'warning',
+                        'admin' => 'primary',
+                        default => 'danger',
                     }),
                 TextColumn::make('created_at')
                     ->dateTime()
