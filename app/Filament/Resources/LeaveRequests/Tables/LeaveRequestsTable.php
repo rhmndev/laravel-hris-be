@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\SelectFilter;
 
 class LeaveRequestsTable
 {
@@ -49,7 +50,22 @@ class LeaveRequestsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // select filter approved, rejected, pending
+                SelectFilter::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ])
+                    ->label('Status'),
+
+                // select filter cuti tahunan, cuti sakit
+                SelectFilter::make('type')
+                    ->options([
+                        'cuti_tahunan' => 'Cuti tahunan',
+                        'cuti_sakit' => 'Cuti sakit',
+                    ])
+                    ->label('Jenis Cuti'),
             ])
             ->recordActions([
                 EditAction::make(),
