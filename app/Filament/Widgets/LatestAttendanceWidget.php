@@ -20,7 +20,7 @@ class LatestAttendanceWidget extends TableWidget
 
     protected static ?string $heading = 'Kehadiran Hari Ini';
 
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 2;
 
     protected int | string | array $columnSpan = 'full';
 

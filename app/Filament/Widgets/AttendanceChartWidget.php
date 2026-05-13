@@ -11,7 +11,7 @@ class AttendanceChartWidget extends ChartWidget
 {
     protected ?string $heading = 'Statistik Kehadiran 7 Hari Terakhir';
 
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
 
     protected int | string | array $columnSpan = 'full';
 
