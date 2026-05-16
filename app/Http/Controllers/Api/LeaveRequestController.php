@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Session\Store;
+use Illuminate\Support\Facades\Storage;
 
 class LeaveRequestController extends Controller
 {
@@ -100,9 +101,32 @@ class LeaveRequestController extends Controller
         ], 200);
     }
 
-    public function destroy()
+    public function destroy(Request $request, LeaveRequest $leaveRequest): JsonResponse
     {
+        if ((int) $leaveRequest->user_id !== (int) $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki izin untuk menghapus permintaan cuti ini'
+            ], 404);
+        }
 
+        if ($leaveRequest->status !== self::STATUS_PENDING) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hanya permintaan cuti dengan status SEDANG PENDING yang dapat dihapus!'
+            ], 422);
+        }
+
+        if ($leaveRequest->attachment) {
+            Storage::disk('public')->delete($leaveRequest->attachment);
+        }
+
+        $leaveRequest->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permintaan cuti berhasil dihapus'
+        ], 200);
     }
 
     private function toResponse(LeaveRequest $leaveRequest): array

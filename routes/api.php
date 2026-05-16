@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/history', [AttendanceController::class, 'history']);
     });
 
-    Route::get('/leave-requests', [LeaveRequestController::class, 'index']);
     Route::post('/leave-requests', [LeaveRequestController::class, 'store']);
+    Route::get('/leave-requests', [LeaveRequestController::class, 'index']);
+    Route::delete('/leave-requests/{leaveRequest}', [LeaveRequestController::class, 'destroy']);
 });
