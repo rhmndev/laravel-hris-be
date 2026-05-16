@@ -41,12 +41,12 @@ class LeaveRequestForm
                     ->required()
                     ->numeric(),
                 Textarea::make('reason')
-                    ->label('Lampiran (Jika ada)')
+                    ->label('Alasan')
                     ->required()
                     ->disabled()
                     ->columnSpanFull(),
                 FileUpload::make('attachment')
-                    ->label('Lampiran')
+                    ->label('Lampiran (Jika Ada)')
                     ->disk('public')
                     ->directory('leave-attachments')
                     ->visibility('public')

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('attachment')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamp('reviewed_at');
+            $table->timestamp('reviewed_at')->nullable();
             $table->text('review_notes')->nullable();
             $table->timestamps();
 
