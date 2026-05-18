@@ -28,14 +28,18 @@ class LatestAttendanceWidget extends TableWidget
     {
         $user = Auth::user();
 
-        $isSuperAdmin = method_exists($user, 'hasRole') && $user->hasRole('super_admin') ?? false;
+        $isSuperAdmin = method_exists($user, 'hasRole') && $user->hasRole('super_admin') ??  false;
+        $isManager = method_exists($user, 'hasRole') && $user->hasRole('manager') && $user->branch_id ??  false;
+
         $query = Attendance::query()
             ->with('user')
+            ->where('branch_id', $user->branch_id)
             ->whereDate('attendance_date', Carbon::today())
             ->latest('check_in_time');
 
-        if (! $isSuperAdmin && $user) {
-            $query->where('user_id', $user->id);
+        if (!$isSuperAdmin || !$isManager && $user) {
+            // $query->where('user_id', $user->id);
+            $query->where('branch_id', $user->branch_id);
         }
 
         return $table

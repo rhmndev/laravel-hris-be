@@ -79,6 +79,11 @@ class AttendanceResource extends Resource
             return $query;
         }
 
+        // get query all attendance for manager
+        if (method_exists($user, 'hasRole') && $user->hasRole('manager') && $user->branch_id) {
+            return $query->where('branch_id', $user->branch_id);
+        }
+
         return $query->where('user_id', $user->id);
     }
 }
