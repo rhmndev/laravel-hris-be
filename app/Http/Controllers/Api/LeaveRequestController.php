@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\LeaveRequest;
-use App\http\Requests\StoreLeaveRequest;
+use App\Http\Requests\StoreLeaveRequest;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use App\Models\Attendance;
