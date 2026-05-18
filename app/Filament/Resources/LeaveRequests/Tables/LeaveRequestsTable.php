@@ -16,6 +16,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Actions\Action;
 use Illuminate\Support\Str;
+use Filament\Tables\Enums\FiltersLayout;
 
 
 class LeaveRequestsTable
@@ -89,7 +90,7 @@ class LeaveRequestsTable
                         'cuti_sakit' => 'Cuti sakit',
                     ])
                     ->label('Jenis Cuti'),
-            ])
+            ], layout: FiltersLayout::Modal)
             ->recordActions([
                 Action::make('approve')
                     ->label('Approve')
