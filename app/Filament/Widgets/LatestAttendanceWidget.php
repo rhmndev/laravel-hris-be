@@ -38,8 +38,7 @@ class LatestAttendanceWidget extends TableWidget
             ->latest('check_in_time');
 
         if (!$isSuperAdmin || !$isManager && $user) {
-            // $query->where('user_id', $user->id);
-            $query->where('branch_id', $user->branch_id);
+            $query->where('user_id', $user->id);
         }
 
         return $table

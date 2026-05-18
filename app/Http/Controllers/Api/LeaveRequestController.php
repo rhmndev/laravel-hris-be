@@ -39,6 +39,14 @@ class LeaveRequestController extends Controller
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->startOfDay();
         $requestedDay = $startDate->diffInDays($endDate) + 1;
+        $today = Carbon::now()->startOfDay();
+
+    //     if ($startDate->lt($today)) {
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'Tanggal mulai cuti tidak boleh sebelum hari ini.'
+    //     ], 422);
+    // }
 
         if (LeaveRequest::query()
             ->where('user_id', $user->id)
@@ -59,7 +67,7 @@ class LeaveRequestController extends Controller
             ->exists()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Anda sudah memiliki absensi yang tumpang dengan tangga yang diajukan.'
+                'message' => 'Anda sudah memiliki absensi yang tumpang dengan tanggal yang diajukan.'
             ], 422);
         }
 
