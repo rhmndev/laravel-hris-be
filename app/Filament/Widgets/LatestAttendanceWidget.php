@@ -25,79 +25,85 @@ class LatestAttendanceWidget extends TableWidget
     protected int | string | array $columnSpan = 'full';
 
     public function table(Table $table): Table
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        $isSuperAdmin = method_exists($user, 'hasRole') && $user->hasRole('super_admin') ??  false;
-        $isManager = method_exists($user, 'hasRole') && $user->hasRole('manager') && $user->branch_id ??  false;
+    $isSuperAdmin = method_exists($user, 'hasRole')
+        && $user->hasRole('super_admin');
 
-        $query = Attendance::query()
-            ->with('user')
-            ->where('branch_id', $user->branch_id)
-            ->whereDate('attendance_date', Carbon::today())
-            ->latest('check_in_time');
+    $isManager = method_exists($user, 'hasRole')
+        && $user->hasRole('manager');
 
-        if (!$isSuperAdmin || !$isManager && $user) {
-            $query->where('user_id', $user->id);
-        }
+    $query = Attendance::query()
+        ->with('user')
+        ->whereDate('attendance_date', Carbon::today())
+        ->latest('check_in_time');
 
-        return $table
-            ->query($query)
-            ->columns([
-                TextColumn::make('user.name')
-                    ->label('Nama')
-                    ->searchable()
-                    ->sortable(),
+    if ($isSuperAdmin) {
 
-                TextColumn::make('user.employee_id')
-                    ->label('ID Karyawan')
-                    ->searchable(),
-
-                TextColumn::make('check_in_time')
-                    ->label('Time-In')
-                    ->dateTime('H:i')
-                    ->placeholder('-')
-                    ->AlignCenter()
-                    ->sortable(),
-
-                ImageColumn::make('check_in_photo')
-                   ->label('Foto Check-in')
-                    ->disk('public')
-                    ->circular()
-                    ->alignCenter()
-                    ->ImageHeight(60)
-                    ->ImageWidth(60)
-                    ->placeholder('-'),
-
-                TextColumn::make('check_out_time')
-                    ->label('Time Out')
-                    ->dateTime('H:i')
-                    ->placeholder('-')
-                    ->AlignCenter()
-                    ->sortable(),
-
-                ImageColumn::make('check_out_photo')
-                    ->label('Foto Check-out')
-                    ->disk('public')
-                    ->circular()
-                    ->ImageHeight(60)
-                    ->alignCenter()
-                    ->ImageWidth(60)
-                    ->placeholder('-'),
-
-                TextColumn::make('status')
-                    ->label('Status')
-                    ->badge() // for badge of status
-                    ->colors([
-                        'success' => 'on_time',
-                        'warning' => 'late',
-                    ])
-                    ->formatStateUsing(fn ($state) => match ($state) {
-                        'on_time' => 'Tepat Waktu',
-                        'late' => 'Terlambat',
-                        default => $state,
-                    }),
-            ])
-           ->defaultSort('check_in_time', 'desc');
+    } elseif ($isManager) {
+        $query->where('branch_id', $user->branch_id);
+    } else {
+        $query->where('user_id', $user->id);
     }
+
+    return $table
+        ->query($query)
+        ->columns([
+            TextColumn::make('user.name')
+                ->label('Nama')
+                ->searchable()
+                ->sortable(),
+
+            TextColumn::make('user.employee_id')
+                ->label('ID Karyawan')
+                ->searchable(),
+
+            TextColumn::make('check_in_time')
+                ->label('Time-In')
+                ->dateTime('H:i')
+                ->placeholder('-')
+                ->alignCenter()
+                ->sortable(),
+
+            ImageColumn::make('check_in_photo')
+                ->label('Foto Check-in')
+                ->disk('public')
+                ->circular()
+                ->alignCenter()
+                ->imageHeight(60)
+                ->imageWidth(60)
+                ->placeholder('-'),
+
+            TextColumn::make('check_out_time')
+                ->label('Time Out')
+                ->dateTime('H:i')
+                ->placeholder('-')
+                ->alignCenter()
+                ->sortable(),
+
+            ImageColumn::make('check_out_photo')
+                ->label('Foto Check-out')
+                ->disk('public')
+                ->circular()
+                ->imageHeight(60)
+                ->alignCenter()
+                ->imageWidth(60)
+                ->placeholder('-'),
+
+            TextColumn::make('status')
+                ->label('Status')
+                ->badge()
+                ->colors([
+                    'success' => 'on_time',
+                    'warning' => 'late',
+                ])
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'on_time' => 'Tepat Waktu',
+                    'late' => 'Terlambat',
+                    default => $state,
+                }),
+        ])
+        ->defaultSort('check_in_time', 'desc');
+}
 }
