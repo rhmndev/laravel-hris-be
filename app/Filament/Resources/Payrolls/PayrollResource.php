@@ -46,7 +46,7 @@ class PayrollResource extends Resource
         $user = Auth::user();
         return $user && $user->hasAnyRole([
             'super_admin', 'director', 'hr_manager', 'finance_manager',
-            'manager', 'supervisor', 'hrd_it', 'operator',
+            'manager', 'supervisor', 'hrd_it',
         ]);
     }
 
@@ -288,7 +288,12 @@ class PayrollResource extends Resource
                     ->label('Ajukan')
                     ->icon('heroicon-o-paper-airplane')
                     ->color('info')
-                    ->visible(fn ($record) => $record->status === 'calculated')
+                    ->visible(function ($record) {
+                        if ($record->status !== 'calculated') return false;
+                        /** @var User|null $user */
+                        $user = Auth::user();
+                        return $user && $user->hasAnyRole(['super_admin', 'hr_manager', 'hrd_it']);
+                    })
                     ->requiresConfirmation()
                     ->modalDescription('Ajukan payroll ini untuk persetujuan?')
                     ->action(function ($record) {
@@ -304,7 +309,12 @@ class PayrollResource extends Resource
                     ->label('Periksa')
                     ->icon('heroicon-o-clipboard-document-check')
                     ->color('primary')
-                    ->visible(fn ($record) => $record->status === 'submitted')
+                    ->visible(function ($record) {
+                        if ($record->status !== 'submitted') return false;
+                        /** @var User|null $user */
+                        $user = Auth::user();
+                        return $user && $user->hasAnyRole(['super_admin', 'hr_manager']);
+                    })
                     ->form([
                         Textarea::make('remarks')->label('Catatan')->rows(2),
                     ])
@@ -323,7 +333,12 @@ class PayrollResource extends Resource
                     ->label('Setujui')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn ($record) => $record->status === 'checked')
+                    ->visible(function ($record) {
+                        if ($record->status !== 'checked') return false;
+                        /** @var User|null $user */
+                        $user = Auth::user();
+                        return $user && $user->hasAnyRole(['super_admin', 'finance_manager', 'director']);
+                    })
                     ->requiresConfirmation()
                     ->form([
                         Textarea::make('remarks')->label('Catatan')->rows(2),
@@ -343,7 +358,12 @@ class PayrollResource extends Resource
                     ->label('Tolak')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->visible(fn ($record) => in_array($record->status, ['submitted', 'checked']))
+                    ->visible(function ($record) {
+                        if (!in_array($record->status, ['submitted', 'checked'])) return false;
+                        /** @var User|null $user */
+                        $user = Auth::user();
+                        return $user && $user->hasAnyRole(['super_admin', 'hr_manager', 'finance_manager', 'director']);
+                    })
                     ->form([
                         Textarea::make('remarks')->label('Alasan Penolakan')->rows(2)->required(),
                     ])
@@ -366,7 +386,7 @@ class PayrollResource extends Resource
                         if ($record->status !== 'approved') return false;
                         /** @var User|null $user */
                         $user = Auth::user();
-                        return $user && $user->hasAnyRole(['super_admin', 'finance_manager', 'hr_manager']);
+                        return $user && $user->hasAnyRole(['super_admin', 'finance_manager', 'director']);
                     })
                     ->form([
                         DatePicker::make('payment_date')
@@ -416,6 +436,11 @@ class PayrollResource extends Resource
                         ->color('info')
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion()
+                        ->visible(function () {
+                            /** @var User|null $user */
+                            $user = Auth::user();
+                            return $user && $user->hasAnyRole(['super_admin', 'hr_manager', 'hrd_it']);
+                        })
                         ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
                             $service = app(PayrollApprovalService::class);
                             $success = 0;
@@ -439,6 +464,11 @@ class PayrollResource extends Resource
                         ->color('success')
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion()
+                        ->visible(function () {
+                            /** @var User|null $user */
+                            $user = Auth::user();
+                            return $user && $user->hasAnyRole(['super_admin', 'finance_manager', 'director']);
+                        })
                         ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
                             $service = app(PayrollApprovalService::class);
                             /** @var User|null $user */

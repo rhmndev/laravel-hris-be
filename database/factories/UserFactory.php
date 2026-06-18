@@ -33,8 +33,17 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'employee_id' => 'DRM' . str_pad(static::$employeeIdCounter++, 3, '0', STR_PAD_LEFT),
-            'role' => 'employee'
         ];
+    }
+
+    /**
+     * Configure the factory to assign Spatie 'employee' role after creation.
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->assignRole('employee');
+        });
     }
 
     /**

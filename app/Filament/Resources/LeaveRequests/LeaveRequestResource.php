@@ -66,7 +66,13 @@ class LeaveRequestResource extends Resource
         return static::applyUserScope(parent::getEloquentQuery());
     }
 
-     protected static function applyUserScope(Builder $query): Builder
+    /**
+     * Scope the query based on user role.
+     * - Super Admin / Director / HR Manager / HRD IT / Finance Manager: see all
+     * - Manager / Supervisor: scoped to their branch
+     * - Others (employee / general_staff / operator): only their own records
+     */
+    protected static function applyUserScope(Builder $query): Builder
     {
         $user = Auth::user();
 
@@ -74,22 +80,20 @@ class LeaveRequestResource extends Resource
             return $query->whereRaw('1 = 0');
         }
 
-        if (static::hasRole('super_admin')) {
+        // Global access roles
+        if (static::hasAnyRole($user, ['super_admin', 'director', 'hr_manager', 'hrd_it', 'finance_manager'])) {
             return $query;
         }
 
-        if (static::hasRole('manager')) {
+        // Branch-scoped roles
+        if (static::hasAnyRole($user, ['manager', 'supervisor'])) {
             return filled($user->branch_id)
                 ? $query->where('branch_id', $user->branch_id)
                 : $query->whereRaw('1 = 0');
         }
 
-        if (static::hasRole('employee')) {
-            return $query->where('user_id', $user->id);
-        }
-
-        return $query->whereRaw('1 = 0');
-
+        // Personal access only (employee, general_staff, operator)
+        return $query->where('user_id', $user->id);
     }
 
     private static function hasRole(string $roleName): bool
@@ -108,6 +112,22 @@ class LeaveRequestResource extends Resource
             return in_array(strtolower($roleName), $ownedRoles, true);
     }
 
+    private static function hasAnyRole($user, array $roleNames): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        $ownedRoles = $user->roles
+            ->pluck('name')
+            ->map(static fn(string $name): string => strtolower($name))
+            ->all();
+
+        $expectedRoles = array_map(static fn(string $name): string => strtolower($name), $roleNames);
+
+        return count(array_intersect($ownedRoles, $expectedRoles)) > 0;
+    }
+
     public static function canCreate(): bool
     {
         return true;
@@ -121,19 +141,15 @@ class LeaveRequestResource extends Resource
             return false;
         }
 
-        if (static::hasRole('super_admin')) {
+        if (static::hasAnyRole($user, ['super_admin', 'hr_manager', 'hrd_it'])) {
             return true;
         }
 
-        if (static::hasRole('manager')) {
+        if (static::hasAnyRole($user, ['manager', 'supervisor'])) {
             return filled($record->branch_id)
                 ? $record->branch_id === $user->branch_id
                 : false;
         }
-
-        // if (static::hasRole('manager')) {
-        //     return (int) $record->branch_id === $user->branch_id;
-        // }
 
         return false;
     }
@@ -146,22 +162,17 @@ class LeaveRequestResource extends Resource
             return false;
         }
 
-        if (static::hasRole('super_admin')) {
+        if (static::hasAnyRole($user, ['super_admin', 'hr_manager'])) {
             return true;
         }
 
-        if (static::hasRole('manager')) {
+        if (static::hasAnyRole($user, ['manager'])) {
             return filled($record->branch_id)
                 ? $record->branch_id === $user->branch_id
                 : false;
         }
 
-        // if (static::hasRole('manager')) {
-        //     return (int) $record->branch_id === $user->branch_id;
-        // }
-
         return false;
     }
-
 
 }

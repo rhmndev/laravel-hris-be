@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Models\User;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\LeaveRequest;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -72,4 +73,43 @@ class LeaveRequestPolicy
         return $authUser->can('Reorder:LeaveRequest');
     }
 
+    /**
+     * Determine who can approve leave requests in the Filament admin panel.
+     *
+     * - Super Admin: always allowed
+     * - HR Manager: can approve leave from Operator / General Staff / Supervisor level employees
+     * - Director: can approve all leave requests across all levels (final authorization)
+     */
+    public function approve(AuthUser $authUser, LeaveRequest $leaveRequest): bool
+    {
+        /** @var User $authUser */
+        // Super admin otomatis mendapatkan izin
+        if ($authUser->hasRole('super_admin')) {
+            return true;
+        }
+
+        // HRD berhak menyetujui cuti dari karyawan level Operator/General Staff/Supervisor
+        if ($authUser->hasRole('hr_manager')) {
+            $requester = $leaveRequest->user;
+            if ($requester && $requester->hasAnyRole(['operator', 'general_staff', 'supervisor'])) {
+                return true;
+            }
+        }
+
+        // Director berhak menyetujui seluruh pengajuan cuti di semua level jabatan
+        if ($authUser->hasRole('director')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine who can reject leave requests.
+     * Same role requirements as approve.
+     */
+    public function reject(AuthUser $authUser, LeaveRequest $leaveRequest): bool
+    {
+        return $this->approve($authUser, $leaveRequest);
+    }
 }

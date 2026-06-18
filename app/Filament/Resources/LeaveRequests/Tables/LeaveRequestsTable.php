@@ -151,6 +151,13 @@ class LeaveRequestsTable
             ]);
     }
 
+    /**
+     * Determine if the current user can review (approve/reject) this leave request.
+     * Aligns with LeaveRequestPolicy::approve() logic:
+     * - Super Admin: always
+     * - HR Manager: for operator/general_staff/supervisor level employees
+     * - Director: all levels (final authorization)
+     */
     private static function canReview(LeaveRequest $record): bool
     {
         $user = Auth::user();
@@ -159,13 +166,21 @@ class LeaveRequestsTable
             return false;
         }
 
-        if (static::hasRoleInsensitive($user,['super_admin'])) {
+        if (static::hasRoleInsensitive($user, ['super_admin'])) {
             return true;
         }
 
-        if (static::hasRoleInsensitive($user,['manager'])) {
-            return (int) $record->branch_id === (int) $user->branch_id;
+        if (static::hasRoleInsensitive($user, ['hr_manager'])) {
+            $requester = $record->user;
+            if ($requester && $requester->hasAnyRole(['operator', 'general_staff', 'supervisor'])) {
+                return true;
+            }
         }
+
+        if (static::hasRoleInsensitive($user, ['director'])) {
+            return true;
+        }
+
         return false;
     }
 
