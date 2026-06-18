@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/company', [CompanyController::class, 'index']);
     // Route::get('/profile-photo', [UserController::class, 'profilePhoto']);
     Route::middleware('auth:sanctum')->get('/user/profile-photo', [UserController::class, 'profilePhoto']);
+    Route::post('/user/profile-photo', [UserController::class, 'uploadProfilePhoto']);
     Route::put('/user/profile', [UserController::class, 'updateProfile']);
 
     Route::prefix('attendance')->group(function () {

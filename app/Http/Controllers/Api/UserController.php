@@ -41,6 +41,79 @@ class UserController extends Controller
 }
 
     /**
+     * Upload/update profile photo.
+     * Validates image format and size, saves to public storage,
+     * and updates the user's profile_photo column.
+     */
+    public function uploadProfilePhoto(Request $request): JsonResponse
+    {
+        $request->validate([
+            'photo' => 'required|string',
+        ]);
+
+        $base64 = $request->input('photo');
+
+        // Strip data URI prefix if present (e.g., "data:image/jpeg;base64,...")
+        if (preg_match('/^data:image\/\w+;base64,/', $base64, $matches)) {
+            $base64 = substr($base64, strlen($matches[0]));
+        }
+
+        $imageData = base64_decode($base64, true);
+
+        if ($imageData === false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Format gambar tidak valid.',
+            ], 422);
+        }
+
+        // Max 5MB decoded size
+        if (strlen($imageData) > 5 * 1024 * 1024) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ukuran foto maksimal 5MB.',
+            ], 422);
+        }
+
+        // Validate it's actually an image
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_buffer($finfo, $imageData);
+        finfo_close($finfo);
+
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!in_array($mimeType, $allowedMimes)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hanya format JPEG, PNG, dan WebP yang diperbolehkan.',
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        // Delete old photo if exists
+        if ($user->profile_photo && Storage::disk('public')->exists(ltrim($user->profile_photo, '/'))) {
+            Storage::disk('public')->delete(ltrim($user->profile_photo, '/'));
+        }
+
+        // Save new photo
+        $extension = match ($mimeType) {
+            'image/png' => 'png',
+            'image/webp' => 'webp',
+            default => 'jpg',
+        };
+        $path = 'profile-photos/' . $user->id . '_' . time() . '.' . $extension;
+        Storage::disk('public')->put($path, $imageData);
+
+        $user->update(['profile_photo' => $path]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Foto profil berhasil diperbarui.',
+            'data' => $user->fresh(['branch', 'employeeDesignation.shift', 'employeeDesignation.designation']),
+        ]);
+    }
+
+    /**
      * Update employee's own profile data (ESS - Employee Self Service)
      */
     public function updateProfile(Request $request): JsonResponse
