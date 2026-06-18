@@ -22,6 +22,16 @@ class AttendanceResource extends Resource
 {
     protected static ?string $model = Attendance::class;
 
+    public static function canAccess(): bool
+    {
+        /** @var User|null $user */
+        $user = Auth::user();
+        return $user && $user->hasAnyRole([
+            'super_admin', 'director', 'hr_manager', 'finance_manager',
+            'manager', 'supervisor', 'hrd_it', 'operator', 'general_staff',
+        ]);
+    }
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     public static function form(Schema $schema): Schema

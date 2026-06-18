@@ -232,7 +232,12 @@ return [
     |
     */
 
-    'custom_permissions' => [],
+    'custom_permissions' => [
+        'Approve:Payroll',
+        'Check:Payroll',
+        'Submit:Payroll',
+        'Calculate:Payroll',
+    ],
 
     /*
     |--------------------------------------------------------------------------

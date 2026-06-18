@@ -40,5 +40,32 @@ class UserController extends Controller
     ]);
 }
 
+    /**
+     * Update employee's own profile data (ESS - Employee Self Service)
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255|unique:users,email,' . $user->id,
+            'phone_personal' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            'date_of_birth' => 'nullable|date',
+            'identity_number' => 'nullable|string|max:20|unique:users,identity_number,' . $user->id,
+            'bank_account_number' => 'nullable|string|max:50',
+            'bank_name' => 'nullable|string|max:100',
+        ]);
+
+        $user->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'data' => $user->fresh(['branch', 'employeeDesignation.shift', 'employeeDesignation.designation']),
+            'message' => 'Profil berhasil diperbarui.',
+        ]);
+    }
+
 
 }

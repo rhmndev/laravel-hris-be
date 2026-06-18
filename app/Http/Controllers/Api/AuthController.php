@@ -61,7 +61,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $request->user()->load('branch'), // Load relasi branch
+            'data' => $request->user()->load(['branch', 'employeeDesignation.shift', 'employeeDesignation.designation']),
             'message' => 'User profile retrieved successfully',
         ]);
     }

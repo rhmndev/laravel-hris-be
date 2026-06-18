@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Permission\Traits\HasRoles;
 
 
-#[Fillable(['name', 'email', 'phone' , 'password', 'employee_id', 'role', 'branch_id', 'profile_photo'])]
+#[Fillable(['name', 'email', 'phone' , 'password', 'employee_id', 'role', 'branch_id', 'profile_photo', 'date_of_birth', 'identity_number', 'bank_account_number', 'bank_name', 'address', 'phone_personal', 'join_date', 'employee_status'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -33,6 +33,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'date_of_birth' => 'date',
+            'join_date' => 'date',
         ];
     }
 
@@ -41,7 +43,22 @@ class User extends Authenticatable
         return $this->hasMany(Attendance::class);
     }
 
-        public function isAdmin(): bool
+    public function payrolls(): HasMany
+    {
+        return $this->hasMany(Payroll::class);
+    }
+
+    public function employeeDesignation()
+    {
+        return $this->hasOne(EmployeeDesignation::class)->where('is_active', true);
+    }
+
+    public function payrollApprovals(): HasMany
+    {
+        return $this->hasMany(PayrollApproval::class, 'approver_id');
+    }
+
+    public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }

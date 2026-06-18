@@ -8,7 +8,7 @@ use App\Filament\Resources\LeaveRequests\Pages\ListLeaveRequests;
 use App\Filament\Resources\LeaveRequests\Schemas\LeaveRequestForm;
 use App\Filament\Resources\LeaveRequests\Tables\LeaveRequestsTable;
 use App\Models\LeaveRequest;
-use App\Models\Users;
+use App\Models\User;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -22,6 +22,16 @@ use Override;
 class LeaveRequestResource extends Resource
 {
     protected static ?string $model = LeaveRequest::class;
+
+    public static function canAccess(): bool
+    {
+        /** @var User|null $user */
+        $user = Auth::user();
+        return $user && $user->hasAnyRole([
+            'super_admin', 'director', 'hr_manager', 'finance_manager',
+            'manager', 'supervisor', 'hrd_it', 'operator', 'general_staff',
+        ]);
+    }
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
