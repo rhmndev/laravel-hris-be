@@ -72,11 +72,19 @@ class LandingPageForm
                     ->image()
                     ->maxSize(5120) // 5MB
                     ->visible(fn (callable $get) => $get('type') === 'image')
-                    ->afterStateHydrated(function (FileUpload $component, $state) {
-                        // Prevent crash when value is not a file path string
-                        if (!is_string($state)) {
-                            $component->state(null);
+                    ->formatStateUsing(function ($state) {
+                        // Unwrap array state back to string (FileUpload internally wraps in array)
+                        if (is_array($state)) {
+                            return $state[0] ?? null;
                         }
+                        return is_string($state) ? $state : null;
+                    })
+                    ->dehydrateStateUsing(function ($state) {
+                        // Always store as plain string, not array
+                        if (is_array($state)) {
+                            return $state[0] ?? null;
+                        }
+                        return is_string($state) ? $state : null;
                     }),
 
                 TextInput::make('sort_order')
