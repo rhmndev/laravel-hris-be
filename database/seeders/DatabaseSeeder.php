@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         // Seed roles and permissions first
         $this->call([
             RolePermissionSeeder::class,
+            LandingSettingSeeder::class,
         ]);
 
         // Create default company
