@@ -19,8 +19,8 @@
     </script>
     <style>
         html { scroll-behavior: smooth; }
-        .gradient-hero { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0ea5e9 100%); }
-        .gradient-card { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); }
+        .gradient-hero { background: #1a365d; }
+        .gradient-card { background: #f0f9ff; }
         .glass { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.15); }
         .feature-icon { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 14px; }
         .changelog-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
@@ -140,7 +140,7 @@
                 <div class="hidden lg:flex justify-center fade-in">
                     <div class="relative">
                         <div class="w-64 h-[500px] bg-slate-800 rounded-[2.5rem] border-4 border-slate-700 shadow-2xl overflow-hidden float-anim">
-                            <div class="w-full h-full bg-gradient-to-b from-sky-400 to-blue-600 flex flex-col items-center justify-center p-6">
+                            <div class="w-full h-full bg-sky-500 flex flex-col items-center justify-center p-6">
                                 <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <img src="{{ asset('assets/images/face-detec2.png') }}" alt="{{ $hero['app_name']->value }}" class="w-16 h-16" />
                                 </div>
@@ -297,7 +297,7 @@
     {{-- About Section --}}
     <section id="about" class="py-20 bg-slate-50">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="fade-in bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-10 sm:p-14 text-center relative overflow-hidden">
+            <div class="fade-in bg-slate-900 rounded-3xl p-10 sm:p-14 text-center relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl"></div>
                 <div class="relative z-10">
                     <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">
