@@ -28,7 +28,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->favicon(asset('public/dci.ico'))
+            // ->favicon(asset('public/dci.ico'))
+            ->favicon(asset('assets/images/dci.png'))
             ->colors([
                 'primary' => Color::Amber,
             ])
