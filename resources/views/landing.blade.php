@@ -7,6 +7,7 @@
     <meta name="description" content="{{ $hero['hero_tagline']->value ?? '' }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" type="image/png" href="/dci.ico">
+    <link rel="icon" type="image/png" href="/dci.ico" >
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
