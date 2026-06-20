@@ -97,15 +97,15 @@
                     </h1>
 
                     @if($hero['hero_tagline'] ?? null)
-                        <p class="text-lg sm:text-xl text-sky-100/90 mb-4 leading-relaxed font-medium">
-                            {{ $hero['hero_tagline']->value }}
-                        </p>
+                        <div class="text-lg sm:text-xl text-sky-100/90 mb-4 leading-relaxed font-medium prose prose-invert max-w-none">
+                            {!! $hero['hero_tagline']->value !!}
+                        </div>
                     @endif
 
                     @if($hero['hero_description'] ?? null)
-                        <p class="text-base text-sky-200/70 mb-8 leading-relaxed">
-                            {{ $hero['hero_description']->value }}
-                        </p>
+                        <div class="text-base text-sky-200/70 mb-8 leading-relaxed prose prose-invert max-w-none">
+                            {!! $hero['hero_description']->value !!}
+                        </div>
                     @endif
 
                     <div class="flex flex-wrap gap-4">
@@ -303,9 +303,9 @@
                     <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">
                         {{ $about['about_title']->value ?? 'Tentang Aplikasi' }}
                     </h2>
-                    <p class="text-slate-300 leading-relaxed text-lg max-w-2xl mx-auto">
-                        {!! nl2br(e($about['about_description']->value ?? '')) !!}
-                    </p>
+                    <div class="text-slate-300 leading-relaxed text-lg max-w-2xl mx-auto prose prose-invert">
+                        {!! $about['about_description']->value ?? '' !!}
+                    </div>
                     @if($latestRelease)
                         <a href="{{ route('download.latest') }}" class="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-400 text-white font-bold px-8 py-4 rounded-xl transition mt-8 shadow-lg">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
