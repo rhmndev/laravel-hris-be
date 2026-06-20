@@ -54,33 +54,28 @@ class LandingPageForm
                     ->required()
                     ->searchable(),
 
-                TextInput::make('value')
+                TextInput::make('value_text')
                     ->label('Value (Text)')
                     ->maxLength(500)
                     ->visible(fn (callable $get) => $get('type') === 'text')
-                    ->placeholder('Enter text value'),
+                    ->placeholder('Enter text value')
+                    ->dehydrated(false),
 
-                RichEditor::make('value')
+                RichEditor::make('value_textarea')
                     ->label('Value (Rich Text)')
                     ->columnSpanFull()
-                    ->visible(fn (callable $get) => $get('type') === 'textarea'),
+                    ->visible(fn (callable $get) => $get('type') === 'textarea')
+                    ->dehydrated(false),
 
-                FileUpload::make('value')
+                FileUpload::make('value_image')
                     ->label('Value (Image)')
                     ->directory('landing')
                     ->disk('public')
                     ->image()
                     ->maxSize(5120) // 5MB
                     ->visible(fn (callable $get) => $get('type') === 'image')
-                    ->formatStateUsing(function ($state) {
-                        // Unwrap array state back to string (FileUpload internally wraps in array)
-                        if (is_array($state)) {
-                            return $state[0] ?? null;
-                        }
-                        return is_string($state) ? $state : null;
-                    })
+                    ->dehydrated(false)
                     ->dehydrateStateUsing(function ($state) {
-                        // Always store as plain string, not array
                         if (is_array($state)) {
                             return $state[0] ?? null;
                         }
