@@ -9,6 +9,7 @@ use App\Models\EmployeeDesignation;
 use App\Models\User;
 use BackedEnum;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\DatePicker;
@@ -48,8 +49,20 @@ class EmployeeDesignationResource extends Resource
         return $schema
             ->components([
                 Select::make('user_id')
-                    ->relationship('user', 'name')
                     ->label('Karyawan')
+                    ->relationship('user', 'name', modifyQueryUsing: function (Builder $query, $livewire) {
+                        // Get the current user_id when editing (keep current employee selectable)
+                        $currentUserId = $livewire->record?->user_id ?? null;
+
+                        // Get IDs of users who already have an active designation
+                        $assignedUserIds = EmployeeDesignation::query()
+                            ->where('is_active', true)
+                            ->when($currentUserId, fn (Builder $q) => $q->where('user_id', '!=', $currentUserId))
+                            ->pluck('user_id');
+
+                        // Only show employees who are NOT already assigned
+                        $query->whereNotIn('id', $assignedUserIds);
+                    })
                     ->required()
                     ->searchable()
                     ->preload(),
