@@ -28,21 +28,16 @@ class LatestAttendanceWidget extends TableWidget
 {
     $user = Auth::user();
 
-    $isSuperAdmin = method_exists($user, 'hasRole')
-        && $user->hasRole('super_admin');
-
-    $isManager = method_exists($user, 'hasRole')
-        && $user->hasRole('manager');
+    $isAdminOrManagement = method_exists($user, 'hasAnyRole')
+        && $user->hasAnyRole(['super_admin', 'director', 'hr_manager', 'finance_manager', 'hrd_it']);
 
     $query = Attendance::query()
         ->with('user')
         ->whereDate('attendance_date', Carbon::today())
         ->latest('check_in_time');
 
-    if ($isSuperAdmin) {
-
-    } elseif ($isManager) {
-        $query->where('branch_id', $user->branch_id);
+    if ($isAdminOrManagement) {
+        // Admin and management roles can see all attendance
     } else {
         $query->where('user_id', $user->id);
     }

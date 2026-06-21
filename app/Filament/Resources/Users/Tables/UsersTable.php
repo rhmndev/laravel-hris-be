@@ -67,12 +67,8 @@ class UsersTable
                         'director' => 'primary',
                         'hr_manager' => 'warning',
                         'finance_manager' => 'warning',
-                        'manager' => 'warning',
-                        'supervisor' => 'gray',
                         'hrd_it' => 'info',
-                        'operator' => 'gray',
                         'employee' => 'success',
-                        'general_staff' => 'success',
                         default => 'danger',
                     }),
                 TextColumn::make('employee_status')

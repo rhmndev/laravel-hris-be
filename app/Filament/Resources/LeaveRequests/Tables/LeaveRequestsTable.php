@@ -172,7 +172,7 @@ class LeaveRequestsTable
 
         if (static::hasRoleInsensitive($user, ['hr_manager'])) {
             $requester = $record->user;
-            if ($requester && $requester->hasAnyRole(['operator', 'general_staff', 'supervisor'])) {
+            if ($requester && $requester->hasAnyRole(['hrd_it', 'employee'])) {
                 return true;
             }
         }
@@ -181,24 +181,6 @@ class LeaveRequestsTable
             return true;
         }
 
-        return false;
-    }
-
-    private static function canManage(?LeaveRequest $record = null): bool
-    {
-        $user = Auth::user();
-
-        if (!$user) {
-            return false;
-        }
-
-        if (static::hasRoleInsensitive($user,['super_admin'])) {
-            return true;
-        }
-
-        if (static::hasRoleInsensitive($user,['manager'])) {
-            return (int) $record->branch_id === (int) $user->branch_id;
-        }
         return false;
     }
 

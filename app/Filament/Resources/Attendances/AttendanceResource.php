@@ -27,8 +27,7 @@ class AttendanceResource extends Resource
         /** @var User|null $user */
         $user = Auth::user();
         return $user && $user->hasAnyRole([
-            'super_admin', 'director', 'hr_manager', 'finance_manager',
-            'manager', 'supervisor', 'hrd_it', 'operator', 'general_staff',
+            'super_admin', 'director', 'hr_manager', 'finance_manager', 'hrd_it',
         ]);
     }
 
@@ -84,16 +83,12 @@ class AttendanceResource extends Resource
             return $query->whereRaw('1 = 0');
         }
 
-        // get query all attendance for admin
-        if (method_exists($user, 'hasRole') && $user->hasRole('super_admin')) {
+        // Full access for admin/management roles
+        if (method_exists($user, 'hasAnyRole') && $user->hasAnyRole(['super_admin', 'director', 'hr_manager', 'finance_manager', 'hrd_it'])) {
             return $query;
         }
 
-        // get query all attendance for manager
-        if (method_exists($user, 'hasRole') && $user->hasRole('manager') && $user->branch_id) {
-            return $query->where('branch_id', $user->branch_id);
-        }
-
+        // Personal access only (employee)
         return $query->where('user_id', $user->id);
     }
 }

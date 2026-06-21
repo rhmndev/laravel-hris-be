@@ -26,8 +26,7 @@ class PayrollPolicy
      * Roles that can view the payroll module in admin panel.
      */
     private const VIEW_ROLES = [
-        'super_admin', 'director', 'hr_manager', 'finance_manager',
-        'manager', 'supervisor', 'hrd_it',
+        'super_admin', 'director', 'hr_manager', 'finance_manager', 'hrd_it',
     ];
 
     /**
@@ -57,8 +56,8 @@ class PayrollPolicy
             return true;
         }
 
-        // general_staff / operator / employee can view their own payroll
-        if ($user->hasAnyRole(['general_staff', 'operator', 'employee']) && $payroll->user_id === $user->id) {
+        // employee can view their own payroll
+        if ($user->hasRole('employee') && $payroll->user_id === $user->id) {
             return true;
         }
 

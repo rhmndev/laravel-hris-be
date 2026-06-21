@@ -45,8 +45,7 @@ class PayrollResource extends Resource
         /** @var User|null $user */
         $user = Auth::user();
         return $user && $user->hasAnyRole([
-            'super_admin', 'director', 'hr_manager', 'finance_manager',
-            'manager', 'supervisor', 'hrd_it',
+            'super_admin', 'director', 'hr_manager', 'finance_manager', 'hrd_it',
         ]);
     }
 

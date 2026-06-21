@@ -157,29 +157,11 @@ class RolePermissionSeeder extends Seeder
         $director->syncPermissions(array_unique($directorPerms));
 
         // ════════════════════════════════════════════════════════════
-        //  ADDITIONAL ROLES (not in spec, kept for backward compat)
+        //  Level 5: HRD & IT Staff — operational HRIS management
+        //  Modules: User ✓, Attendance ✓, Shift ✓, Branch ✓,
+        //           LeaveRequest ✓, Payroll Create/Read/Calculate,
+        //           Payroll Master (E/D/Designation) ✓, Tax Setting ✓
         // ════════════════════════════════════════════════════════════
-
-        // ── Manager — department-level view access ──────────────────
-        $manager = Role::firstOrCreate(['name' => 'manager', 'guard_name' => 'web']);
-        $managerPerms = array_merge(
-            $viewPerms('Payroll'),
-            $viewPerms('Attendance'),
-            $viewPerms('LeaveRequest'),
-            $viewPerms('EmployeeDesignation'),
-        );
-        $manager->syncPermissions(array_unique($managerPerms));
-
-        // ── Supervisor — team-level view access ─────────────────────
-        $supervisor = Role::firstOrCreate(['name' => 'supervisor', 'guard_name' => 'web']);
-        $supervisorPerms = array_merge(
-            $viewPerms('Payroll'),
-            $viewPerms('Attendance'),
-            $viewPerms('LeaveRequest'),
-        );
-        $supervisor->syncPermissions(array_unique($supervisorPerms));
-
-        // ── HRD/HRGA & IT — operational payroll config + IT ─────────
         $hrdIt = Role::firstOrCreate(['name' => 'hrd_it', 'guard_name' => 'web']);
         $hrdItPerms = array_merge(
             // Full CRUD on payroll master configuration
@@ -203,32 +185,10 @@ class RolePermissionSeeder extends Seeder
         );
         $hrdIt->syncPermissions(array_unique($hrdItPerms));
 
-        // ── Operator — payroll data entry + calculate ───────────────
-        $operator = Role::firstOrCreate(['name' => 'operator', 'guard_name' => 'web']);
-        $operatorPerms = array_merge(
-            // Attendance & Leave: CRUD (daily operations)
-            $allPerms('Attendance'),
-            $allPerms('LeaveRequest'),
-            // View payroll master (read-only)
-            $viewPerms('Shift'),
-            $viewPerms('Designation'),
-            $viewPerms('EmployeeDesignation'),
-        );
-        $operator->syncPermissions(array_unique($operatorPerms));
-
-        // ── General Staff — view attendance & leave only ────────────
-        $generalStaff = Role::firstOrCreate(['name' => 'general_staff', 'guard_name' => 'web']);
-        $generalStaffPerms = array_merge(
-            $viewPerms('Attendance'),
-            $viewPerms('LeaveRequest'),
-        );
-        $generalStaff->syncPermissions(array_unique($generalStaffPerms));
-
-        // ── Employee — mobile app access only, no admin panel ───────
+        // ════════════════════════════════════════════════════════════
+        //  Level 6: Employee — mobile app access only, no admin panel
+        // ════════════════════════════════════════════════════════════
         Role::firstOrCreate(['name' => 'employee', 'guard_name' => 'web']);
         // No admin permissions — ESS access via API/mobile app only
-
-        // ── Panel User — required by Shield config ──────────────────
-        Role::firstOrCreate(['name' => 'panel_user', 'guard_name' => 'web']);
     }
 }

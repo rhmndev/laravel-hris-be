@@ -28,8 +28,7 @@ class LeaveRequestResource extends Resource
         /** @var User|null $user */
         $user = Auth::user();
         return $user && $user->hasAnyRole([
-            'super_admin', 'director', 'hr_manager', 'finance_manager',
-            'manager', 'supervisor', 'hrd_it', 'operator', 'general_staff',
+            'super_admin', 'director', 'hr_manager', 'finance_manager', 'hrd_it',
         ]);
     }
 
@@ -80,19 +79,12 @@ class LeaveRequestResource extends Resource
             return $query->whereRaw('1 = 0');
         }
 
-        // Global access roles
+        // Global access roles: super_admin, director, hr_manager, hrd_it, finance_manager
         if (static::hasAnyRole($user, ['super_admin', 'director', 'hr_manager', 'hrd_it', 'finance_manager'])) {
             return $query;
         }
 
-        // Branch-scoped roles
-        if (static::hasAnyRole($user, ['manager', 'supervisor'])) {
-            return filled($user->branch_id)
-                ? $query->where('branch_id', $user->branch_id)
-                : $query->whereRaw('1 = 0');
-        }
-
-        // Personal access only (employee, general_staff, operator)
+        // Personal access only (employee)
         return $query->where('user_id', $user->id);
     }
 
@@ -145,12 +137,6 @@ class LeaveRequestResource extends Resource
             return true;
         }
 
-        if (static::hasAnyRole($user, ['manager', 'supervisor'])) {
-            return filled($record->branch_id)
-                ? $record->branch_id === $user->branch_id
-                : false;
-        }
-
         return false;
     }
 
@@ -164,12 +150,6 @@ class LeaveRequestResource extends Resource
 
         if (static::hasAnyRole($user, ['super_admin', 'hr_manager'])) {
             return true;
-        }
-
-        if (static::hasAnyRole($user, ['manager'])) {
-            return filled($record->branch_id)
-                ? $record->branch_id === $user->branch_id
-                : false;
         }
 
         return false;
