@@ -28,7 +28,8 @@ class EditLandingPage extends EditRecord
         // Map value to the correct field based on type
         $data['value_text'] = ($type === 'text') ? $value : null;
         $data['value_textarea'] = ($type === 'textarea') ? $value : null;
-        $data['value_image'] = ($type === 'image') ? $value : null;
+        // FileUpload always expects an array, even for single-file fields
+        $data['value_image'] = ($type === 'image' && $value) ? [$value] : null;
 
         // Remove the original value key so it doesn't conflict
         unset($data['value']);
