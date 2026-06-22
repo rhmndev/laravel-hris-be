@@ -57,14 +57,14 @@ class LandingPageForm
                 TextInput::make('value_text')
                     ->label('Value (Text)')
                     ->maxLength(500)
-                    ->visible(fn (callable $get) => $get('type') === 'text')
+                    ->visibleJs("\$wire.data.type === 'text'")
                     ->placeholder('Enter text value')
                     ->dehydrated(false),
 
                 RichEditor::make('value_textarea')
                     ->label('Value (Rich Text)')
                     ->columnSpanFull()
-                    ->visible(fn (callable $get) => $get('type') === 'textarea')
+                    ->visibleJs("\$wire.data.type === 'textarea'")
                     ->dehydrated(false),
 
                 FileUpload::make('value_image')
@@ -73,7 +73,7 @@ class LandingPageForm
                     ->disk('public')
                     ->image()
                     ->maxSize(5120) // 5MB
-                    ->visible(fn (callable $get) => $get('type') === 'image')
+                    ->visibleJs("\$wire.data.type === 'image'")
                     ->dehydrated(false)
                     ->dehydrateStateUsing(function ($state) {
                         if (is_array($state)) {
