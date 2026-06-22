@@ -73,14 +73,7 @@ class LandingPageForm
                     ->disk('public')
                     ->image()
                     ->maxSize(5120) // 5MB
-                    ->visibleJs("\$wire.data.type === 'image'")
-                    ->dehydrated(false)
-                    ->dehydrateStateUsing(function ($state) {
-                        if (is_array($state)) {
-                            return $state[0] ?? null;
-                        }
-                        return is_string($state) ? $state : null;
-                    }),
+                    ->visibleJs("\$wire.data.type === 'image'"),
 
                 TextInput::make('sort_order')
                     ->label('Sort Order')
