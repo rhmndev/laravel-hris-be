@@ -65,12 +65,7 @@ class LeaveRequestResource extends Resource
         return static::applyUserScope(parent::getEloquentQuery());
     }
 
-    /**
-     * Scope the query based on user role.
-     * - Super Admin / Director / HR Manager / HRD IT / Finance Manager: see all
-     * - Manager / Supervisor: scoped to their branch
-     * - Others (employee / general_staff / operator): only their own records
-     */
+
     protected static function applyUserScope(Builder $query): Builder
     {
         $user = Auth::user();
@@ -148,7 +143,7 @@ class LeaveRequestResource extends Resource
             return false;
         }
 
-        if (static::hasAnyRole($user, ['super_admin', 'hr_manager'])) {
+        if (static::hasAnyRole($user, ['super_admin', 'hr_manager', 'hrd_it'])) {
             return true;
         }
 
