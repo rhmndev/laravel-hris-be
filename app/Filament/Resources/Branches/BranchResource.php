@@ -25,7 +25,7 @@ class BranchResource extends Resource
     {
         /** @var User|null $user */
         $user = Auth::user();
-        return $user && $user->hasAnyRole(['super_admin', 'director']);
+        return $user && $user->hasAnyRole(['super_admin', 'director', 'hr_manager', 'hrd_it']);
     }
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
