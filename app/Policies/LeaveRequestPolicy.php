@@ -89,7 +89,7 @@ class LeaveRequestPolicy
         }
 
         // HRD berhak menyetujui cuti dari karyawan level Employee
-        if ($authUser->hasRole('hr_manager', 'hrd_it')) {
+        if ($authUser->hasAnyRole('hr_manager', 'hrd_it')) {
             $requester = $leaveRequest->user;
             if ($requester && $requester->hasAnyRole(['employee'])) {
                 return true;
