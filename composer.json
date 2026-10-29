@@ -7,7 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "bezhansalleh/filament-shield": "^4.2",
+        "bezhansalleh/filament-shield": "4.2",
         "dedoc/scramble": "^0.13.18",
         "filament/filament": "^4.0",
         "laravel/framework": "^13.0",

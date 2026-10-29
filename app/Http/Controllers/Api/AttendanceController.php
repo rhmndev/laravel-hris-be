@@ -39,6 +39,35 @@ class AttendanceController extends Controller
             ], 404);
         }
 
+        // Check-in time window: reject if before min_check_in_time or after max_check_in_time
+        if ($branch->min_check_in_time || $branch->max_check_in_time) {
+            $now = Carbon::now();
+
+            if ($branch->min_check_in_time) {
+                $minCheckIn = Carbon::createFromTimeString($branch->min_check_in_time)
+                    ->setDate($now->year, $now->month, $now->day);
+
+                if ($now->lessThan($minCheckIn)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Check-in belum dapat dilakukan. Waktu check-in paling awal adalah ' . $minCheckIn->format('H:i') . '.',
+                    ], 422);
+                }
+            }
+
+            if ($branch->max_check_in_time) {
+                $maxCheckIn = Carbon::createFromTimeString($branch->max_check_in_time)
+                    ->setDate($now->year, $now->month, $now->day);
+
+                if ($now->greaterThan($maxCheckIn)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Check-in tidak dapat dilakukan. Batas waktu check-in adalah ' . $maxCheckIn->format('H:i') . '.',
+                    ], 422);
+                }
+            }
+        }
+
         if ($branch->require_geolocation) {
             $distance = $this->calculateDistance(
                 $request->latitude,
@@ -120,6 +149,36 @@ class AttendanceController extends Controller
                 'message' => 'Company information not found',
             ], 404);
         }
+
+        // Check-out time window: reject if before min_check_out_time or after max_check_out_time
+        if ($branch->min_check_out_time || $branch->max_check_out_time) {
+            $now = Carbon::now();
+
+            if ($branch->min_check_out_time) {
+                $minCheckOut = Carbon::createFromTimeString($branch->min_check_out_time)
+                    ->setDate($now->year, $now->month, $now->day);
+
+                if ($now->lessThan($minCheckOut)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Check-out belum dapat dilakukan. Waktu check-out paling awal adalah ' . $minCheckOut->format('H:i') . '.',
+                    ], 422);
+                }
+            }
+
+            if ($branch->max_check_out_time) {
+                $maxCheckOut = Carbon::createFromTimeString($branch->max_check_out_time)
+                    ->setDate($now->year, $now->month, $now->day);
+
+                if ($now->greaterThan($maxCheckOut)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Check-out tidak dapat dilakukan. Batas waktu check-out adalah ' . $maxCheckOut->format('H:i') . '.',
+                    ], 422);
+                }
+            }
+        }
+
 
         if ($branch->require_geolocation) {
             $distance = $this->calculateDistance(

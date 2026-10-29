@@ -39,6 +39,26 @@ class BranchesTable
                 TextColumn::make('work_end_time')
                     ->time()
                     ->sortable(),
+                TextColumn::make('min_check_in_time')
+                    ->label('Min Check-In')
+                    ->time()
+                    ->sortable()
+                    ->placeholder('Not set'),
+                TextColumn::make('max_check_in_time')
+                    ->label('Max Check-In')
+                    ->time()
+                    ->sortable()
+                    ->placeholder('Not set'),
+                TextColumn::make('min_check_out_time')
+                    ->label('Min Check-Out')
+                    ->time()
+                    ->sortable()
+                    ->placeholder('Not set'),
+                TextColumn::make('max_check_out_time')
+                    ->label('Max Check-Out')
+                    ->time()
+                    ->sortable()
+                    ->placeholder('Not set'),
                 IconColumn::make('require_liveness')
                     ->boolean()
                     ->alignCenter()

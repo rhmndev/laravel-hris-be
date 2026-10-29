@@ -38,15 +38,25 @@ class LeaveRequestController extends Controller
         $user = $request->user();
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->startOfDay();
-        $requestedDay = $startDate->diffInDays($endDate) + 1;
         $today = Carbon::now()->startOfDay();
 
-    //     if ($startDate->lt($today)) {
-    //     return response()->json([
-    //         'success' => false,
-    //         'message' => 'Tanggal mulai cuti tidak boleh sebelum hari ini.'
-    //     ], 422);
-    // }
+        // Calculate total days excluding Sundays
+        $requestedDay = 0;
+        $cursor = $startDate->copy();
+        while ($cursor->lte($endDate)) {
+            if (!$cursor->isSunday()) {
+                $requestedDay++;
+            }
+            $cursor->addDay();
+        }
+
+        // Reject if all days in range are Sundays (no valid leave days)
+        if ($requestedDay === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Rentang tanggal yang dipilih hanya mencakup hari Minggu. Silakan pilih tanggal lain.'
+            ], 422);
+        }
 
         if (LeaveRequest::query()
             ->where('user_id', $user->id)
