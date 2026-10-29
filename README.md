@@ -1,58 +1,197 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+#  Dokumentasi HRIS ESS — Panduan Menjalankan Project di Lokal
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+<img width="413" height="848" alt="Screenshot 2026-07-18 174153" src="https://github.com/user-attachments/assets/1e61f934-8408-4e55-a10a-f0357410e2d9" />
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Panduan singkat cara menjalankan project **HRIS ESS** dari cloning sampai berjalan di komputer lokal, mencakup backend (`laravel-hris-be`) dan mobile app (`hris-mobile-app`).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+##  Spesifikasi Teknologi
 
-## Learning Laravel
+### Backend — `laravel-hris-be`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Teknologi | Versi | Fungsi |
+|---|---|---|
+| PHP | ^8.3 | Bahasa pemrograman backend |
+| Laravel | ^13.0 | Framework REST API |
+| Laravel Sanctum | ^4.0 | Autentikasi Bearer token untuk mobile app |
+| Filament | ^4.0 | Admin panel (kelola branch, user, attendance, payroll, dll) |
+| Filament Shield + spatie/laravel-permission | ^4.2 / ^7.4 | Role-Based Access Control (RBAC) |
+| MySQL / SQLite | - | Database (SQLite default, MySQL untuk produksi) |
+| Scramble | ^0.13 | Dokumentasi API otomatis |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Mobile App — `hris-mobile-app`
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+| Teknologi | Versi | Fungsi |
+|---|---|---|
+| Vue.js | ^3.5 | Framework frontend (Composition API) |
+| TypeScript | ~6.0 | Type safety |
+| Vite | ^8.0 | Build tool & dev server |
+| Capacitor | ^8.3 | Hybrid mobile runtime (Android) |
+| Tailwind CSS + DaisyUI | ^4.2 / ^5.5 | Styling & UI components |
+| Pinia | ^3.0 | State management (auth store) |
+| Vue Router | ^4.6 | Navigasi & route guard |
+| face-api.js + MediaPipe | ^0.22 / ^0.3 | Face recognition & liveness detection |
+| Capacitor Geolocation / Camera / Share | ^8.x | Akses GPS, kamera, share file native |
+| jsPDF | ^4.2 | Generasi slip gaji (payslip) PDF |
+| Leaflet | ^1.9 | Peta lokasi check-in |
 
-## Agentic Development
+### Kebutuhan Sistem (Prasyarat)
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- **PHP >= 8.3** + Composer
+- **Node.js >= 20** + npm
+- **MySQL** (opsional, default SQLite sudah siap pakai)
+- **Android Studio + JDK 17+** (hanya jika ingin build/run di emulator/HP Android)
+
+---
+
+##  1. Clone Repository
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <url-repo-laravel-hris-be> laravel-hris-be
+git clone <url-repo-hris-mobile-app> hris-mobile-app
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+##  2. Menjalankan Backend (laravel-hris-be)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+cd laravel-hris-be
 
-## Code of Conduct
+# Install dependensi PHP
+composer install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Buat file konfigurasi environment
+copy .env.example .env          # Windows
+# cp .env.example .env          # macOS/Linux
 
-## Security Vulnerabilities
+# Generate application key
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Konfigurasi Database
 
-## License
+**Opsi A — SQLite (paling mudah, tanpa server database):**
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Buat file database lalu jalankan migrasi:
+
+```bash
+type nul > database/database.sqlite   # Windows
+php artisan migrate --seed
+```
+
+**Opsi B — MySQL:**
+
+Edit `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=hris
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Buat database `hris` di MySQL, lalu:
+
+```bash
+php artisan migrate --seed
+```
+
+### Jalankan Server
+
+```bash
+php artisan serve
+```
+
+ API berjalan di **http://127.0.0.1:8000**
+ Admin panel Filament di **http://127.0.0.1:8000/admin** (akun dari seeder)
+
+> Alternatif sekali jalan: `composer run dev` (menjalankan server, queue, logs, dan vite bersamaan).
+
+---
+
+##  3. Menjalankan Mobile App (hris-mobile-app)
+
+```bash
+cd hris-mobile-app
+
+# Install dependensi
+npm install
+
+# Buat file konfigurasi environment
+copy .env.example .env          # Windows
+```
+
+Edit file `.env` dan arahkan ke backend lokal:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000/api
+```
+
+>  Gunakan `127.0.0.1` (bukan `localhost`) agar mudah diakses dari emulator Android. Untuk perangkat fisik, ganti dengan IP komputer di jaringan yang sama, misal `http://192.168.1.10:8000/api`.
+
+### Jalankan di Browser (Mode Development)
+
+```bash
+npm run dev
+```
+
+ Aplikasi berjalan di **http://localhost:5173**
+
+### Jalankan di Android (Emulator / HP)
+
+```bash
+# Build aset web
+npm run build
+
+# Sinkronkan ke project Android
+npx cap sync android
+
+# Buka Android Studio / jalankan di emulator
+npx cap run android
+```
+
+---
+
+##  4. Alur Kerja Development
+
+1. Jalankan backend: `php artisan serve` (terminal 1)
+2. Jalankan mobile app: `npm run dev` (terminal 2)
+3. Login di mobile app dengan akun hasil seeder
+4. Kelola data (branch, user, approval cuti, payroll) lewat admin panel `/admin`
+
+### Catatan Penting
+
+- **Setiap ada perubahan migrasi** (misal kolom baru di branch), jalankan:
+  ```bash
+  php artisan migrate
+  ```
+- **Jika menambah/ubah field di Branch**, sesuaikan tipe TypeScript di `src/services/auth/types.ts` dan `src/services/company/types.ts`.
+- **Aturan bisnis yang berlaku**:
+  - Hari Minggu dalam rentang pengajuan cuti **otomatis dilewati** (tidak dihitung sebagai hari cuti).
+  - Check-in/check-out divalidasi terhadap 4 jendela waktu per branch: `min_check_in_time`, `max_check_in_time`, `min_check_out_time`, `max_check_out_time` (dikosongkan = tanpa batas).
+
+---
+
+##  Struktur Singkat
+
+```
+developments/
+├── laravel-hris-be/              # Backend API + Admin Panel
+│   ├── app/Http/Controllers/Api/ # REST API (auth, attendance, leave, payslip, payroll)
+│   ├── app/Filament/Resources/   # Halaman admin panel
+│   ├── app/Models/               # Eloquent models (User, Branch, Attendance, dll)
+│   ├── database/migrations/      # Skema database
+│   └── routes/api.php            # Daftar endpoint API
+│
+└── hris-mobile-app/              # Mobile App (Vue 3 + Capacitor)
+    ├── src/views/                # Halaman (Login, Attendance, Leave, PaySlip, Profile)
+    ├── src/components/           # Komponen (LivenessDetection, MapPreview, dll)
+    ├── src/services/             # API client per domain
+    ├── src/stores/               # Pinia auth store
+    └── android/                  # Project native Android (Capacitor)
+```
